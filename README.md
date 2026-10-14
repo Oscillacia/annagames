@@ -44,6 +44,9 @@
 </head>
 <body>
 <canvas id="game" width="800" height="500"></canvas>
+  <p style="margin-top: 20px; font-size: 14px; color: #888;">
+    Contact me: @oscilliacia
+</p>
 <div id="hud">
   <div>Уровень: <span id="levelHud">1 / 3</span></div>
   <div>Очки: <span id="score">0</span></div>

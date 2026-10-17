@@ -2,6 +2,73 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
+<title>Моё портфолио</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f5f5f7;
+    color: #222;
+  }
+  /* Меню вкладок */
+  nav {
+    display: flex;
+    background: #1a1a2e;
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  nav button {
+    flex: 1;
+    background: none;
+    border: none;
+    color: #fff;
+    padding: 18px 10px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  nav button:hover { background: #2a2a4e; }
+  nav button.active { background: #4a9eff; }
+
+  /* Содержимое вкладок */
+  .tab-content {
+    display: none;
+    padding: 30px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .tab-content.active { display: block; }
+</style>
+</head>
+<body>
+
+<nav>
+  <button class="tab-btn active" data-tab="games">🎮 Игры</button>
+  <button class="tab-btn" data-tab="bots">🤖 ТГ-боты</button>
+  <button class="tab-btn" data-tab="realty">🏠 Недвижимость</button>
+  <button class="tab-btn" data-tab="books">📚 Книги в подарок</button>
+  <button class="tab-btn" data-tab="contacts">👤 Обо мне</button>
+</nav>
+
+<!-- ================= ВКЛАДКА 1: ИГРЫ ================= -->
+<section id="games" class="tab-content active">
+  <h1>Игры</h1>
+
+  <!-- Подменю для игр -->
+  <div style="margin-bottom: 20px;">
+    <button class="game-btn active" data-game="game1">Игра 1: Лисёнок</button>
+    <button class="game-btn" data-game="game2">Игра 2 (скоро)</button>
+  </div>
+
+  <!-- Игра 1 -->
+  <div id="game1" class="game-panel">
+ <!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
 <title>Лисёнок: приключение</title>
 <style>
   body {
@@ -44,7 +111,7 @@
 </head>
 <body>
 <canvas id="game" width="800" height="500"></canvas>
-  <p style="margin-top: 20px; font-size: 14px; color: #888;">
+<p style="margin-top: 20px; font-size: 14px; color: #888;">
     Contact me: @oscilliacia
 </p>
 <div id="hud">
@@ -1008,5 +1075,130 @@ loop();
 </script>
 </body>
 </html>
+  </div>
 
-Contact me: @oscilliacia
+  <!-- Игра 2 -->
+  <div id="game2" class="game-panel" style="display:none;">
+    <p>Здесь будет вторая игра. Пока в разработке 🚧</p>
+    <!-- Когда сделаете — вставите сюда код так же, как для Игры 1 -->
+  </div>
+</section>
+
+<!-- ================= ВКЛАДКА 2: ТГ-БОТЫ ================= -->
+<section id="bots" class="tab-content">
+  <h1>Мои Telegram-боты</h1>
+
+  <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+    <div style="background:#fff; padding:20px; border-radius:12px; width:300px;">
+      <h3>Название бота</h3>
+      <p>Короткое описание, что он делает.</p>
+      <a href="https://t.me/имя_вашего_бота" target="_blank"
+         style="display:inline-block; background:#4a9eff; color:#fff; padding:10px 20px; border-radius:8px; text-decoration:none;">
+         Открыть в Telegram
+      </a>
+    </div>
+  </div>
+
+  <h2 style="margin-top:40px;">QR-код на бота</h2>
+  <p>Можно сгенерировать QR прямо тут — вставьте картинку:</p>
+  <!-- 👇 QR-код вставляется как обычная картинка -->
+  <img src="qr-bot.png" alt="QR-код бота" style="width:200px;">
+  <!-- Чтобы получить QR: зайдите на qr-code-generator.com, введите ссылку t.me/ваш_бот, скачайте PNG, загрузите в репозиторий -->
+</section>
+
+<!-- ================= ВКЛАДКА 3: НЕДВИЖИМОСТЬ ================= -->
+<section id="realty" class="tab-content">
+  <h1>Недвижимость</h1>
+
+  <div style="margin-bottom:20px;">
+    <button class="realty-btn active" data-realty="city">🏙 Городская</button>
+    <button class="realty-btn" data-realty="country">🌳 Загородная</button>
+  </div>
+
+  <!-- Городская -->
+  <div id="city" class="realty-panel">
+    <!-- 👇 ОБЪЯВЛЕНИЯ. Копируйте блок ниже для каждого объекта -->
+    <div style="background:#fff; border-radius:12px; overflow:hidden; width:320px; display:inline-block; margin:10px; vertical-align:top;">
+      <img src="photo1.jpg" alt="Квартира" style="width:100%; height:200px; object-fit:cover;">
+      <div style="padding:15px;">
+        <h3 style="margin:0 0 8px;">2-комн. квартира, 65 м²</h3>
+        <p style="margin:0 0 8px; color:#666; font-size:14px;">Москва, Хамовники</p>
+        <p style="margin:0 0 12px; font-size:20px; font-weight:bold; color:#4a9eff;">25 000 000 ₽</p>
+        <a href="https://www.miel.ru/ссылка_на_ваше_объявление" target="_blank"
+           style="display:inline-block; background:#4a9eff; color:#fff; padding:8px 16px; border-radius:8px; text-decoration:none; font-size:14px;">
+           Смотреть на Миэль
+        </a>
+      </div>
+    </div>
+    <!-- Конец блока объявления -->
+  </div>
+
+  <!-- Загородная -->
+  <div id="country" class="realty-panel" style="display:none;">
+    <!-- 👇 Сюда точно такие же блоки, только с загородными объектами -->
+  </div>
+</section>
+
+<!-- ================= ВКЛАДКА 4: КНИГИ ================= -->
+<section id="books" class="tab-content">
+  <h1>Книги в подарок</h1>
+
+  <!-- 👇 Копируйте этот блок для каждой книги -->
+  <div style="background:#fff; border-radius:12px; overflow:hidden; width:260px; display:inline-block; margin:10px; vertical-align:top;">
+    <img src="book1.jpg" alt="Книга" style="width:100%; height:320px; object-fit:cover;">
+    <div style="padding:15px;">
+      <h3 style="margin:0 0 8px;">Название книги</h3>
+      <p style="margin:0 0 8px; color:#666; font-size:14px;">Короткое описание</p>
+      <p style="margin:0; font-size:18px; font-weight:bold; color:#4a9eff;">Бесплатно / 500 ₽</p>
+    </div>
+  </div>
+  <!-- Конец блока книги -->
+</section>
+
+<!-- ================= ВКЛАДКА 5: ОБО МНЕ ================= -->
+<section id="contacts" class="tab-content">
+  <h1>Обо мне</h1>
+  <p>Здесь напишите пару предложений о себе: чем занимаетесь, что делаете, чем можете помочь.</p>
+
+  <h2>Контакты</h2>
+  <ul style="list-style:none; padding:0; font-size:16px;">
+    <li>📱 Telegram: <a href="https://t.me/oscilliacia" target="_blank">@oscilliacia</a></li>
+    <li>✉️ Email: <a href="mailto:ваш@email.com">ваш@email.com</a></li>
+    <li>💬 WhatsApp: <a href="https://wa.me/79990000000" target="_blank">+7 999 000-00-00</a></li>
+  </ul>
+</section>
+
+<script>
+  // Переключение верхних вкладок
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  // Переключение игр внутри вкладки "Игры"
+  document.querySelectorAll('.game-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.game-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.game-panel').forEach(p => p.style.display = 'none');
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.game).style.display = 'block';
+    });
+  });
+
+  // Переключение городская/загородная
+  document.querySelectorAll('.realty-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.realty-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.realty-panel').forEach(p => p.style.display = 'none');
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.realty).style.display = 'block';
+    });
+  });
+</script>
+
+</body>
+</html>

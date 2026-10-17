@@ -1080,7 +1080,564 @@ loop();
   <!-- Игра 2 -->
   <div id="game2" class="game-panel" style="display:none;">
     <p>Здесь будет вторая игра. Пока в разработке 🚧</p>
-    <!-- Когда сделаете — вставите сюда код так же, как для Игры 1 -->
+    <<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Цветочные пазлы</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: 'Segoe UI', sans-serif;
+    background: radial-gradient(circle at 50% 30%, #2a2a40, #12121f);
+    color: #fff; height: 100vh; display: flex; flex-direction: column;
+    user-select: none; overflow: hidden;
+  }
+  .topbar {
+    display: flex; align-items: center; justify-content: center; gap: 18px;
+    padding: 10px; background: #16162a; border-bottom: 2px solid #2a2a40;
+    flex-wrap: wrap; font-size: 14px;
+  }
+  .legend { display: flex; align-items: center; gap: 8px; }
+  .swatch { width: 24px; height: 24px; border-radius: 50%; border: 2px solid #555; }
+  .arrow { color: #888; font-size: 16px; }
+  .hearts { font-size: 18px; letter-spacing: 2px; }
+  .heart-lost { opacity: .25; }
+  .moves { color: #9ad4ff; }
+
+  .game { flex: 1; display: flex; min-height: 0; }
+  .left { flex: 1; display: flex; align-items: center; justify-content: center; }
+  #flower { max-width: 100%; max-height: 100%; }
+
+  .right {
+    width: 340px; background: #16162a; padding: 16px; overflow-y: auto;
+    border-left: 2px solid #2a2a40;
+  }
+  .right h2 { margin: 0 0 6px; font-size: 17px; }
+  .target-block {
+    background: #1c1c30; border: 2px solid #33334f; border-radius: 14px;
+    padding: 10px; margin-bottom: 14px;
+  }
+  .target-row { display: flex; align-items: center; gap: 12px; }
+  #targetFlower { flex-shrink: 0; }
+  .target-text { font-size: 12px; color: #b6bbd4; line-height: 1.5; }
+  .hint { font-size: 12px; color: #9aa0b5; margin-bottom: 12px; line-height: 1.4; }
+  .puzzle-grid { display: flex; flex-direction: column; gap: 10px; }
+  .puzzle {
+    background: #222238; border: 2px solid #33334f; border-radius: 12px;
+    padding: 8px; cursor: pointer; transition: all .15s;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .puzzle:hover { border-color: #4cafef; background: #28284a; transform: translateX(-3px); }
+  .puzzle:active { transform: scale(.97); }
+  .puzzle.disabled { opacity: .35; pointer-events: none; }
+  .puzzle.reset-puzzle { border-color: #b8860b; }
+  .puzzle.reset-puzzle:hover { border-color: #ffd166; }
+  .puzzle .label { font-size: 13px; color: #cfd3e6; }
+
+  .status { margin-top: 14px; padding-top: 12px; border-top: 1px solid #2a2a40; font-size: 14px; }
+  .status .win { color: #6ee7a0; font-weight: bold; }
+  .status .lose { color: #ff7b7b; font-weight: bold; }
+
+  button {
+    margin-top: 10px; width: 100%; padding: 10px; cursor: pointer;
+    border: none; border-radius: 8px; background: #4cafef; color: #fff;
+    font-size: 15px; font-weight: 600;
+  }
+  button:hover { background: #3a9bd8; }
+
+  .screen {
+    position: fixed; inset: 0; display: none;
+    align-items: center; justify-content: center;
+    background: rgba(10, 10, 20, 0.85); backdrop-filter: blur(6px);
+    z-index: 100;
+  }
+  .screen.show { display: flex; }
+  .panel {
+    background: #1c1c30; border: 2px solid #33334f; border-radius: 20px;
+    padding: 36px 44px; text-align: center; max-width: 500px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    animation: pop .25s ease-out;
+  }
+  @keyframes pop { from { transform: scale(.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .panel h1 { margin: 0 0 10px; font-size: 28px; }
+  .panel p { margin: 0 0 18px; color: #b6bbd4; line-height: 1.5; font-size: 14px; }
+  .panel .big-emoji { font-size: 50px; margin-bottom: 8px; }
+  .panel button { margin-top: 6px; padding: 12px; font-size: 16px; }
+  .panel .secondary { background: #2a2a40; color: #cfd3e6; margin-top: 8px; }
+  .panel .secondary:hover { background: #34345a; }
+</style>
+</head>
+<body>
+<!-- ВЕРХ: легенда + сердечки + ходы -->
+<div class="topbar">
+  <div class="legend"><b>Цепочка цвета:</b></div>
+  <div class="legend">
+    <div class="swatch" style="background:#ffffff"></div>белый
+    <span class="arrow">→</span>
+    <div class="swatch" style="background:#e74c3c"></div>красный
+    <span class="arrow">→</span>
+    <div class="swatch" style="background:#2ecc71"></div>зелёный ✅
+    <span class="arrow">→</span>
+    <div class="swatch" style="background:#f39c12"></div>оранжевый ⚠️
+  </div>
+  <div class="legend">
+    <span class="hearts" id="hearts">❤️❤️❤️</span>
+  </div>
+  <div class="legend" style="color:#9aa0b5">
+    Уровень: <span id="lvlLabel">1</span> &nbsp;|&nbsp;
+    Ходы: <span class="moves" id="movesLabel">0 / 14</span>
+  </div>
+</div>
+
+<!-- ОСНОВНОЕ -->
+<div class="game">
+  <!-- ЛЕВО: цветок -->
+  <div class="left">
+    <canvas id="flower" width="620" height="620"></canvas>
+  </div>
+
+  <!-- ПРАВО: цель + пазлы -->
+  <div class="right">
+    <div class="target-block">
+      <h2>Цель</h2>
+      <div class="target-row">
+        <canvas id="targetFlower" width="120" height="120"></canvas>
+        <div class="target-text">
+          Доведи <b>все лепестки</b> до зелёного,<br>
+          не потеряв все сердечки и уложившись в ходы.<br>
+          Лишний клик по зелёному = оранжевый (ошибка).
+        </div>
+      </div>
+    </div>
+
+    <h2>Выбери пазл</h2>
+    <p class="hint">Наведи на пазл — лепестки на цветке подсветятся. Один клик = один шаг по цвету. Пазл «Сброс» откатывает все лепестки на шаг назад.</p>
+    <div class="puzzle-grid" id="puzzles"></div>
+
+    <div class="status" id="status"></div>
+    <button id="restart">Заново</button>
+  </div>
+</div>
+
+<!-- СТАРТОВЫЙ ЭКРАН -->
+<div class="screen show" id="startScreen">
+  <div class="panel">
+    <div class="big-emoji">🌸</div>
+    <h1>Цветочные пазлы</h1>
+    <p>Выбирай фигуры-пазлы справа — они нажимают лепестки цветка слева.<br>
+       Каждое нажатие двигает лепесток по цепочке:<br>
+       <b>белый → красный → зелёный</b>.<br>
+       Нажатие по уже зелёному делает его <b>оранжевым</b> — это ошибка (−1 ❤️).<br>
+       Оранжевый можно починить ещё одним нажатием (вернётся в зелёный).<br>
+       Пазл <b>«Сброс»</b> откатывает все лепестки на шаг назад — ошибку не тратит, но тратит ход.<br>
+       Докрась все лепестки до зелёного, сохранив сердечки и уложившись в ходы!</p>
+    <button id="startBtn">Играть</button>
+  </div>
+</div>
+
+<!-- ЭКРАН ПОБЕДЫ -->
+<div class="screen" id="winScreen">
+  <div class="panel">
+    <div class="big-emoji">🎉</div>
+    <h1>Уровень пройден!</h1>
+    <p id="winText">Цветок полностью окрашен.</p>
+    <button id="nextBtn">Следующий уровень →</button>
+    <button id="replayBtn" class="secondary">Пройти заново</button>
+  </div>
+</div>
+
+<!-- ЭКРАН ПРОИГРЫША -->
+<div class="screen" id="loseScreen">
+  <div class="panel">
+    <div class="big-emoji">🥀</div>
+    <h1 id="loseTitle">Не получилось!</h1>
+    <p id="loseText">Попробуй ещё раз.</p>
+    <button id="retryBtn">Повторить уровень</button>
+  </div>
+</div>
+<script>
+/* ================= НАСТРОЙКИ УРОВНЕЙ ================= */
+// Лепестки по уровням (индекс = уровень)
+const PETALS_BY_LEVEL   = [0, 5, 5, 6, 6, 7, 7, 7];
+// Сердечки (жизни) по уровням
+const HEARTS_BY_LEVEL   = [0, 3, 3, 3, 2, 2, 2, 2];
+// Лимит ходов по уровням
+const MOVES_BY_LEVEL    = [0, 14, 16, 20, 24, 28, 32, 36];
+
+const COLORS = ['#ffffff', '#e74c3c', '#2ecc71', '#f39c12'];
+const GREEN = 2;
+
+function petalCountForLevel(lvl) { return PETALS_BY_LEVEL[Math.min(lvl, PETALS_BY_LEVEL.length - 1)]; }
+function heartsForLevel(lvl)     { return HEARTS_BY_LEVEL[Math.min(lvl, HEARTS_BY_LEVEL.length - 1)]; }
+function movesForLevel(lvl)      { return MOVES_BY_LEVEL[Math.min(lvl, MOVES_BY_LEVEL.length - 1)]; }
+
+/* ================= СБАЛАНСИРОВАННЫЕ НАБОРЫ ПАЗЛОВ ================= */
+// Для 5 лепестков: каждый лепесток встречается 2–3 раза
+const PUZZLES_5 = [
+  { petals: [0, 1],    name: '1-2' },
+  { petals: [1, 2],    name: '2-3' },
+  { petals: [3, 4],    name: '4-5' },
+  { petals: [2, 4],    name: '3-5' },
+  { petals: [0, 2, 4], name: '1-3-5' },
+  { petals: [1, 3],    name: '2-4' },
+];
+
+// Для 6 лепестков
+const PUZZLES_6 = [
+  { petals: [0, 1],    name: '1-2' },
+  { petals: [1, 2],    name: '2-3' },
+  { petals: [2, 3],    name: '3-4' },
+  { petals: [3, 4],    name: '4-5' },
+  { petals: [4, 5],    name: '5-6' },
+  { petals: [0, 5],    name: '1-6' },
+  { petals: [0, 2, 4], name: '1-3-5' },
+  { petals: [1, 3, 5], name: '2-4-6' },
+];
+
+// Для 7 лепестков
+const PUZZLES_7 = [
+  { petals: [0, 1],    name: '1-2' },
+  { petals: [1, 2],    name: '2-3' },
+  { petals: [2, 3],    name: '3-4' },
+  { petals: [3, 4],    name: '4-5' },
+  { petals: [4, 5],    name: '5-6' },
+  { petals: [5, 6],    name: '6-7' },
+  { petals: [0, 6],    name: '1-7' },
+  { petals: [0, 3, 6], name: '1-4-7' },
+  { petals: [1, 3, 5], name: '2-4-6' },
+  { petals: [0, 2, 4], name: '1-3-5' },
+];
+
+function puzzlesForLevel(lvl) {
+  const n = petalCountForLevel(lvl);
+  if (n <= 5) return PUZZLES_5;
+  if (n === 6) return PUZZLES_6;
+  return PUZZLES_7;
+}
+
+/* ================= СОСТОЯНИЕ ================= */
+let LEVEL = 1;
+let PETAL_COUNT = 5;
+let MAX_HEARTS = 3;
+let MAX_MOVES = 14;
+let stage = [];
+let hearts = 3;
+let movesLeft = 14;
+let gameActive = false;
+let hoveredPetals = null; // для подсветки
+
+/* ================= ЦВЕТОК ================= */
+const canvas = document.getElementById('flower');
+const ctx = canvas.getContext('2d');
+const CX = canvas.width / 2, CY = canvas.height / 2;
+const R_PETAL = 110, PETAL_R = 78;
+
+function petalPos(i, count, cx, cy, rp) {
+  const angle = (Math.PI * 2 * i) / count - Math.PI / 2;
+  return { x: cx + Math.cos(angle) * rp, y: cy + Math.sin(angle) * rp };
+}
+
+function drawFlower() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  for (let i = 0; i < PETAL_COUNT; i++) {
+    const p = petalPos(i, PETAL_COUNT, CX, CY, R_PETAL);
+    const c = COLORS[stage[i]];
+    const highlighted = hoveredPetals && hoveredPetals.includes(i);
+
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, PETAL_R + 3, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(0,0,0,0.35)';
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, PETAL_R, 0, Math.PI * 2);
+    ctx.fillStyle = c;
+    ctx.fill();
+    ctx.lineWidth = highlighted ? 6 : 3;
+    ctx.strokeStyle = highlighted ? '#ffd166'
+                    : (stage[i] === GREEN ? '#6ee7a0' : 'rgba(255,255,255,0.25)');
+    ctx.stroke();
+
+    ctx.fillStyle = 'rgba(0,0,0,0.55)';
+    ctx.font = 'bold 22px sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(i + 1, p.x, p.y);
+  }
+  ctx.beginPath();
+  ctx.arc(CX, CY, 52, 0, Math.PI * 2);
+  ctx.fillStyle = '#ffd166'; ctx.fill();
+  ctx.lineWidth = 4; ctx.strokeStyle = '#b8860b'; ctx.stroke();
+}
+
+/* ================= ОБРАЗЕЦ ЦЕЛИ ================= */
+const targetCanvas = document.getElementById('targetFlower');
+const tctx = targetCanvas.getContext('2d');
+
+function drawTargetFlower() {
+  const W = targetCanvas.width, H = targetCanvas.height;
+  tctx.clearRect(0, 0, W, H);
+  const cx = W / 2, cy = H / 2;
+  const rp = 34, pr = 22;
+
+  tctx.beginPath();
+  tctx.arc(cx, cy, W / 2 - 2, 0, Math.PI * 2);
+  tctx.fillStyle = '#0f0f1a';
+  tctx.fill();
+
+  for (let i = 0; i < PETAL_COUNT; i++) {
+    const p = petalPos(i, PETAL_COUNT, cx, cy, rp);
+    tctx.beginPath();
+    tctx.arc(p.x, p.y, pr, 0, Math.PI * 2);
+    tctx.fillStyle = COLORS[GREEN];
+    tctx.fill();
+    tctx.lineWidth = 1.5;
+    tctx.strokeStyle = 'rgba(255,255,255,0.25)';
+    tctx.stroke();
+  }
+  tctx.beginPath();
+  tctx.arc(cx, cy, 16, 0, Math.PI * 2);
+  tctx.fillStyle = '#ffd166'; tctx.fill();
+  tctx.lineWidth = 2; tctx.strokeStyle = '#b8860b'; tctx.stroke();
+}
+
+/* ================= МИНИ-ИКОНКИ ПАЗЛОВ ================= */
+function makeMini(petals) {
+  const size = 56;
+  const c = document.createElement('canvas');
+  c.width = size; c.height = size;
+  const g = c.getContext('2d');
+  const cx = size / 2, cy = size / 2, rp = 19, pr = 11;
+  for (let i = 0; i < PETAL_COUNT; i++) {
+    const p = petalPos(i, PETAL_COUNT, cx, cy, rp);
+    g.beginPath();
+    g.arc(p.x, p.y, pr, 0, Math.PI * 2);
+    g.fillStyle = '#3a3a55'; g.fill();
+  }
+  petals.forEach(i => {
+    if (i >= PETAL_COUNT) return;
+    const p = petalPos(i, PETAL_COUNT, cx, cy, rp);
+    g.beginPath();
+    g.arc(p.x, p.y, pr, 0, Math.PI * 2);
+    g.fillStyle = '#4cafef'; g.fill();
+  });
+  return c;
+}
+
+function makeResetMini() {
+  const size = 56;
+  const c = document.createElement('canvas');
+  c.width = size; c.height = size;
+  const g = c.getContext('2d');
+  g.clearRect(0, 0, size, size);
+  g.font = 'bold 30px sans-serif';
+  g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.fillStyle = '#ffd166';
+  g.fillText('↺', size / 2, size / 2 + 2);
+  return c;
+}
+
+/* ================= ПАНЕЛЬ ПАЗЛОВ ================= */
+const puzzlesEl = document.getElementById('puzzles');
+
+function renderPuzzles() {
+  puzzlesEl.innerHTML = '';
+  const list = puzzlesForLevel(LEVEL);
+
+  list.forEach(p => {
+    const div = document.createElement('div');
+    div.className = 'puzzle';
+    div.appendChild(makeMini(p.petals));
+    const label = document.createElement('div');
+    label.className = 'label';
+    label.innerHTML = '<b>' + p.petals.map(i => i + 1).join(', ') +
+      '</b><br><span style="color:#9aa0b5">' + p.name + '</span>';
+    div.appendChild(label);
+
+    div.addEventListener('mouseenter', () => {
+      hoveredPetals = p.petals.filter(i => i < PETAL_COUNT);
+      drawFlower();
+    });
+    div.addEventListener('mouseleave', () => {
+      hoveredPetals = null;
+      drawFlower();
+    });
+    div.addEventListener('click', () => { if (gameActive) usePuzzle(p.petals); });
+    puzzlesEl.appendChild(div);
+  });
+
+  // Пазл «Сброс»
+  const resetDiv = document.createElement('div');
+  resetDiv.className = 'puzzle reset-puzzle';
+  resetDiv.appendChild(makeResetMini());
+  const rlabel = document.createElement('div');
+  rlabel.className = 'label';
+  rlabel.innerHTML = '<b>Сброс</b><br><span style="color:#9aa0b5">−1 шаг всем</span>';
+  resetDiv.appendChild(rlabel);
+
+  resetDiv.addEventListener('mouseenter', () => {
+    hoveredPetals = [];
+    for (let i = 0; i < PETAL_COUNT; i++) hoveredPetals.push(i);
+    drawFlower();
+  });
+  resetDiv.addEventListener('mouseleave', () => {
+    hoveredPetals = null;
+    drawFlower();
+  });
+  resetDiv.addEventListener('click', () => { if (gameActive) useReset(); });
+  puzzlesEl.appendChild(resetDiv);
+}
+
+/* ================= ИНТЕРФЕЙС ================= */
+function updateHearts() {
+  const el = document.getElementById('hearts');
+  let s = '';
+  for (let i = 0; i < MAX_HEARTS; i++) {
+    s += i < hearts ? '❤️' : '<span class="heart-lost">❤️</span>';
+  }
+  el.innerHTML = s;
+}
+
+function updateMoves() {
+  document.getElementById('movesLabel').textContent = movesLeft + ' / ' + MAX_MOVES;
+}
+
+/* ================= ХОДЫ ================= */
+function spendMove() {
+  movesLeft--;
+  updateMoves();
+}
+
+function usePuzzle(petals) {
+  if (movesLeft <= 0) return;
+
+  petals.forEach(i => {
+    if (i >= PETAL_COUNT) return;
+    if (stage[i] === 3) {
+      // был оранжевый — починка в зелёный, ошибка уже засчитана
+      stage[i] = GREEN;
+      return;
+    }
+    stage[i]++;
+    if (stage[i] === 3) {
+      // пережгли — теряем сердечко
+      hearts--;
+    }
+  });
+
+  spendMove();
+  drawFlower();
+  updateHearts();
+  checkEnd();
+}
+
+function useReset() {
+  if (movesLeft <= 0) return;
+
+  for (let i = 0; i < PETAL_COUNT; i++) {
+    if (stage[i] > 0 && stage[i] !== 3) stage[i]--;
+    else if (stage[i] === 3) stage[i] = GREEN; // починка оранжевого
+  }
+
+  spendMove();
+  drawFlower();
+  updateHearts();
+  checkEnd();
+}
+
+/* ================= ПРОВЕРКА КОНЦА ================= */
+function checkEnd() {
+  if (hearts <= 0) {
+    endLose('Сердечки закончились!', 'Ты пережёг слишком много лепестков.');
+    return;
+  }
+
+  let allGreen = true;
+  for (let i = 0; i < PETAL_COUNT; i++) if (stage[i] !== GREEN) { allGreen = false; break; }
+
+  if (allGreen) {
+    gameActive = false;
+    document.querySelectorAll('.puzzle').forEach(p => p.classList.add('disabled'));
+    document.getElementById('status').innerHTML =
+      '<span class="win">🎉 Цветок полностью окрашен!</span>';
+    setTimeout(showWin, 400);
+    return;
+  }
+
+  if (movesLeft <= 0) {
+    endLose('Ходы закончились!', 'Не успел окрасить все лепестки. Попробуй ещё раз.');
+    return;
+  }
+
+  let done = 0;
+  for (let i = 0; i < PETAL_COUNT; i++) if (stage[i] === GREEN) done++;
+  document.getElementById('status').textContent =
+    'Готово лепестков: ' + done + ' / ' + PETAL_COUNT;
+}
+
+function endLose(title, text) {
+  gameActive = false;
+  document.querySelectorAll('.puzzle').forEach(p => p.classList.add('disabled'));
+  document.getElementById('loseTitle').textContent = title;
+  document.getElementById('loseText').textContent = text;
+  document.getElementById('status').innerHTML =
+    '<span class="lose">' + title + '</span>';
+  setTimeout(() => document.getElementById('loseScreen').classList.add('show'), 400);
+}
+
+/* ================= ЭКРАНЫ ================= */
+const startScreen = document.getElementById('startScreen');
+const winScreen = document.getElementById('winScreen');
+const loseScreen = document.getElementById('loseScreen');
+
+function showWin() {
+  document.getElementById('winText').textContent =
+    'Уровень ' + LEVEL + ' пройден: все ' + PETAL_COUNT +
+    ' лепестков зелёные. Осталось ❤️: ' + hearts + ', ходов: ' + movesLeft + '.';
+  winScreen.classList.add('show');
+}
+
+function startLevel(lvl) {
+  LEVEL = lvl;
+  PETAL_COUNT = petalCountForLevel(LEVEL);
+  MAX_HEARTS = heartsForLevel(LEVEL);
+  MAX_MOVES = movesForLevel(LEVEL);
+  stage = new Array(PETAL_COUNT).fill(0);
+  hearts = MAX_HEARTS;
+  movesLeft = MAX_MOVES;
+  hoveredPetals = null;
+  gameActive = true;
+
+  document.getElementById('lvlLabel').textContent = LEVEL;
+  updateHearts();
+  updateMoves();
+
+  winScreen.classList.remove('show');
+  loseScreen.classList.remove('show');
+  startScreen.classList.remove('show');
+
+  renderPuzzles();
+  drawFlower();
+  drawTargetFlower();
+  document.getElementById('status').textContent =
+    'Готово лепестков: 0 / ' + PETAL_COUNT;
+}
+
+/* ================= КНОПКИ ================= */
+document.getElementById('startBtn').addEventListener('click', () => startLevel(1));
+document.getElementById('nextBtn').addEventListener('click', () => startLevel(LEVEL + 1));
+document.getElementById('replayBtn').addEventListener('click', () => startLevel(LEVEL));
+document.getElementById('retryBtn').addEventListener('click', () => startLevel(LEVEL));
+document.getElementById('restart').addEventListener('click', () => startLevel(LEVEL));
+
+/* ================= ИНИЦИАЛИЗАЦИЯ ================= */
+PETAL_COUNT = petalCountForLevel(LEVEL);
+stage = new Array(PETAL_COUNT).fill(0);
+drawFlower();
+drawTargetFlower();
+</script>
+</body>
+</html>
   </div>
 </section>
 

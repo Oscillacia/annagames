@@ -60,7 +60,7 @@
   <!-- Подменю для игр -->
   <div style="margin-bottom: 20px;">
     <button class="game-btn active" data-game="game1">Игра 1: Лисёнок</button>
-    <button class="game-btn" data-game="game2">Игра 2 (скоро)</button>
+    <button class="game-btn" data-game="game2">Игра 2 Раскрась цветок </button>
   </div>
 
   <!-- Игра 1 -->
